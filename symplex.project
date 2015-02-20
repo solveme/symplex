@@ -91,9 +91,9 @@
     </Configuration>
   </Settings>
   <VirtualDirectory Name="src">
-    <File Name="defines.h"/>
-    <File Name="functions.c"/>
-    <File Name="main.c"/>
-    <File Name="interaction.c"/>
+    <File Name="src/defines.h"/>
+    <File Name="src/functions.c"/>
+    <File Name="src/interaction.c"/>
+    <File Name="src/main.c"/>
   </VirtualDirectory>
 </CodeLite_Project>

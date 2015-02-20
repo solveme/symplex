@@ -245,7 +245,7 @@ int iteration(symplex *mx) {
                     }
             }
 
-        //F = find_value(mx->x);
+        F = find_value(mx->x);
         print_main(one.a, mx->x, one.d, m, n, mx->base, NULL, r, s, F, (state & ITERATION_NEXT ? PRINTBASE | PRINTELEMENT : PRINTBASE));
         if (state & ITERATION_NEXT)
             putchar('\n');
