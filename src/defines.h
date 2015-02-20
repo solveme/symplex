@@ -1,3 +1,4 @@
+// add this for some tests of github
 #define DIMENSION 16			// Number of constraints (max m in symplex structure)
 
 #define SUCCESS 0
