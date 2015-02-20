@@ -27,8 +27,8 @@ void print_symplex(symplex *sym, char map){
     double *c, *b;
 
     if (map & PRINTLAST) {
-		// TODO: does this part executed at least once
-		printf("\nPRINTLAST\n");
+        // TODO: does this part executed at least once
+        printf("\nPRINTLAST\n");
         c = sym->d;
         b = sym->x;
     } else {
@@ -37,9 +37,9 @@ void print_symplex(symplex *sym, char map){
     }
 
     print_main (sym->a, b, c, sym->m, sym->n, 
-		map & PRINTBASE ? sym->base : _base, 
-		map & PRINTTARGET ? sym->signs : NULL, 
-		0, 0, 0, map);
+        map & PRINTBASE ? sym->base : _base, 
+        map & PRINTTARGET ? sym->signs : NULL, 
+        0, 0, 0, map);
 }
 
 
@@ -48,59 +48,59 @@ void print_main(double *a, double *x, double *d, int m, int n, const int base[],
     char border[2 * DBL_DIG], *lena;
 
     length = 0;
-    lena = (char *) calloc(m*n + 2*n, sizeof(char));			// There will be stored integer parts lengths of all coefficients 
-	
-	// Calculating length of coefficients and
-	// Finding longest value, so all cells will have width equal to length of this value
+    lena = (char *) calloc(m*n + 2*n, sizeof(char));            // There will be stored integer parts lengths of all coefficients 
+    
+    // Calculating length of coefficients and
+    // Finding longest value, so all cells will have width equal to length of this value
     for (i=0; i<m; i++) {
         for (j=0; j<n; j++)
             if ((*(lena+ i*n + j) = get_length(*(a + i*n + j), &map)) > length)
                 length = *(lena+ i*n +j);
-				//printf("\nLENG = %i\n", length);
+                //printf("\nLENG = %i\n", length);
         if ((*(lena+ m*n + i) = get_length(*(x + base[i]), &map)) > length)
             length = *(lena+ m*n + i);
     }
-	
+    
     for (i=0; i<n; i++)
         if ((*(lena+ m*n + n + i) = get_length(*(d + i), &map)) > length)
             length = *(lena+ m*n + n + i);
-	
-	if ((f_length = get_length(F, NULL)) > length)
-		length = f_length;
-	
-	//printf("\nLENG = %i\n", length);
-	
-	// if length is too short we increase it a little (by increasing <length>, we increase precision of printing)
-	if ( !(map & FRACTIONALS) ) {
-		if (length < ((int)floor(log10(n))+2))
-			length = (int)floor(log10(n))+2;
+    
+    if ((f_length = get_length(F, NULL)) > length)
+        length = f_length;
+    
+    //printf("\nLENG = %i\n", length);
+    
+    // if length is too short we increase it a little (by increasing <length>, we increase precision of printing)
+    if ( !(map & FRACTIONALS) ) {
+        if (length < ((int)floor(log10(n))+2))
+            length = (int)floor(log10(n))+2;
     } else if (length < DBL_DIG/3)
         length = DBL_DIG/3;
     else if (length < DBL_DIG)
         length += 2;
-	
-	// Calculating border size
+    
+    // Calculating border size
     for (i = 0; i < length+3; i++)
         border[i] = '-';
     border[length+3] = '\0';
 
-	// Printing header
+    // Printing header
     print_border(border, n, map);
     if (map & PRINTBASE)
-        printf("| BS |%*c ", length+2, map & BINX ? 'B' : 'X');				// If it's iteration printing, print <Base> and <X> cols at start.
+        printf("| BS |%*c ", length+2, map & BINX ? 'B' : 'X');             // If it's iteration printing, print <Base> and <X> cols at start.
     putchar('|');
     for (i = 0; i < n; i++)
-        printf("%*s%u |", length-(int)floor(log10(i+1))+1, "A", i+1);		// <A> vectors cols.
+        printf("%*s%u |", length-(int)floor(log10(i+1))+1, "A", i+1);       // <A> vectors cols.
     if (map & PRINTTARGET)
-        printf("    |");													// Gap for equation signs
+        printf("    |");                                                    // Gap for equation signs
     if (!(map & PRINTBASE))
-        printf("%*c |", length+2, map & BINX ? 'B' : 'X');					// If it's objective printing, print <B> col at the end.
+        printf("%*c |", length+2, map & BINX ? 'B' : 'X');                  // If it's objective printing, print <B> col at the end.
     putchar('\n');
     print_border(border, n, map);
 
-	// Printing values
+    // Printing values
     for (i = 0; i < m; i++) {
-		// If it's iteration printing, print <Base> and <X> cols at start.
+        // If it's iteration printing, print <Base> and <X> cols at start.
         if (map & PRINTBASE) {
             printf("| %*u |", 2, base[i]+1);
             print_value(*(x + base[i]), length, *(lena + m*n + i), FIXED);
@@ -109,14 +109,14 @@ void print_main(double *a, double *x, double *d, int m, int n, const int base[],
         putchar('|');
         for (j = 0; j < n; j++) {
             print_value(*(a + i*n + j), length, *(lena + i*n + j), FIXED);
-			// Mark element, which will be removed from the basis
+            // Mark element, which will be removed from the basis
             if ((map & PRINTELEMENT) && (r == i) && (s == j))
                 putchar('*');
             else
                 putchar(' ');
             putchar('|');
         }
-		// Print equation signs, if it's objective printing
+        // Print equation signs, if it's objective printing
         if (map & PRINTTARGET)
             switch (signs[i]) {
                 case LOWER:
@@ -128,16 +128,16 @@ void print_main(double *a, double *x, double *d, int m, int n, const int base[],
                 default:
                     printf("  = |");
             }
-		// Print Vector B in last cells
+        // Print Vector B in last cells
         if (!(map & PRINTBASE)) {
             print_value(*(x + base[i]), length, *(lena + m*n + i), FIXED);
             printf(" |");
         }
         putchar('\n');
     }
-	
-	// Printing footer
-	print_border(border, n, map);
+    
+    // Printing footer
+    print_border(border, n, map);
     if (map & PRINTBASE) {
         printf("| F= |");
         print_value(F, length, f_length, FIXED);
@@ -153,7 +153,7 @@ void print_main(double *a, double *x, double *d, int m, int n, const int base[],
         printf(" -> |%-*s|", length+3, (signs[DIMENSION-1] & MAX ? " max " : " min "));
     putchar('\n');
     print_border(border, n, map);
-	
+    
     free(lena);
 }
 
@@ -168,7 +168,7 @@ void print_border (char *border, int n, char map){
         printf("%s+", border);
     if (map & PRINTTARGET)
         printf("----+");
-	printf("%s+\n", border);		// Another one border for <X> or <B> cols.
+    printf("%s+\n", border);        // Another one border for <X> or <B> cols.
 }
 
 
@@ -200,16 +200,16 @@ int get_length (double val, char *map){
     int length;
     char s[2 * DBL_DIG];
 
-	modf(fabs(val), &integer);
-	if (map != NULL && !is_integer(val)) {
-		*map |= FRACTIONALS;
-		//printf("FRACT: %20.18lf\n", val);
-	}
+    modf(fabs(val), &integer);
+    if (map != NULL && !is_integer(val)) {
+        *map |= FRACTIONALS;
+        //printf("FRACT: %20.18lf\n", val);
+    }
     sprintf(s, "%.f", integer);
     length = strlen(s);
     if (val < 0)
         length++;
-	//printf("VAL: %20.18lf = %i\n", val, length);
+    //printf("VAL: %20.18lf = %i\n", val, length);
     return length;
 }
 
@@ -217,21 +217,21 @@ int get_length (double val, char *map){
 void print_value (double num, int a, int b, char map) {
     char s[2 * DBL_DIG];
     int i;
-	
-    sprintf(s, "%*.*f", a, a-b, num);	// Convert double val to string
+    
+    sprintf(s, "%*.*f", a, a-b, num);   // Convert double val to string
     i = strlen(s);
-	if (strchr(s, '.') != NULL) {		// Value is fractional, so we need to make it nicer
-		while (s[i-1] == '0')			// Remove trailing zeros from end of fractpart.
-			i--;
-		if(s[i-1] == '.')				// if whole fractpart consist of zeros remove leading '.', so there will be only integer part
-			i--;
-		s[i] = '\0';
-	}
-    if (map & FIXED)					// Element will be printed in table's cell, so we add more precision (two additional digits will be printed)
+    if (strchr(s, '.') != NULL) {       // Value is fractional, so we need to make it nicer
+        while (s[i-1] == '0')           // Remove trailing zeros from end of fractpart.
+            i--;
+        if(s[i-1] == '.')               // if whole fractpart consist of zeros remove leading '.', so there will be only integer part
+            i--;
+        s[i] = '\0';
+    }
+    if (map & FIXED)                    // Element will be printed in table's cell, so we add more precision (two additional digits will be printed)
         a += 2;
     else
         a = strlen(s);
-    if (fabs(atof(s)) == 0)				// If rest of val string is only "-0" change it to "0"
+    if (fabs(atof(s)) == 0)             // If rest of val string is only "-0" change it to "0"
         printf("%*i", a, (int) atof(s));
     else
         printf("%*s", a, s);
@@ -251,18 +251,18 @@ int get_objective(symplex *obj, char map) {
         printf("\nFilling the matrix of linear constraints (A)");
         for (i=0; i < obj->m; i++) {
             printf("\nEnter %u line of A\n", i+1);
-            for (j=0; j < obj->n; j++)					// Filling <A> row
-				get_value(obj->a+i*obj->n+j);
-			obj->signs[i] = getSign();					// Getting sign type {>=, <=, =}
-			get_value(obj->b+i);						// Filling <B> value
+            for (j=0; j < obj->n; j++)                  // Filling <A> row
+                get_value(obj->a+i*obj->n+j);
+            obj->signs[i] = getSign();                  // Getting sign type {>=, <=, =}
+            get_value(obj->b+i);                        // Filling <B> value
         }
     }
 
     if (map & C & obj->mem) {
         printf("\nEnter the target function (C)\n");
         for (i=0; i < obj->n; i++)
-			get_value(obj->c+i);
-		clear_stdin();									// Remove all junk from input buffer
+            get_value(obj->c+i);
+        clear_stdin();                                  // Remove all junk from input buffer
         printf("\n1 - maximize\n2 - minimize\nEnter the objective: ");
         scanf("%u", &j);
         obj->signs[DIMENSION-1] = (j == 1 ? MAX : MIN );
@@ -290,7 +290,7 @@ int edit_objective(symplex *obj) {
                     scanf("%u", &j);
                     if ((j > 0) && (j <= obj->n)) {
                         printf("\nEnter new value of A[%u,%u] = ", i, j);
-						get_value(obj->a+(i-1)*obj->n+(j-1));
+                        get_value(obj->a+(i-1)*obj->n+(j-1));
                         clear_stdin();
                     } else
                         printf("\nIndex out of bounds.\n");
@@ -302,8 +302,8 @@ int edit_objective(symplex *obj) {
                 scanf("%u", &i);
                 if ((i > 0) && (i <= obj->m)) {
                     printf("\nEnter new value of B[%u] = ", i);
-					get_value(obj->b+(i-1));
-					clear_stdin();
+                    get_value(obj->b+(i-1));
+                    clear_stdin();
                 } else
                     printf("\nIndex out of bounds.\n");
                 break;
@@ -313,7 +313,7 @@ int edit_objective(symplex *obj) {
                 if ((j > 0) && (j <= obj->n)) {
                     printf("\nEnter new value of C[%u] = ", j);
                     get_value(obj->c+(j-1));
-					clear_stdin();
+                    clear_stdin();
                 } else
                     printf("\nIndex out of bounds.\n");
                 break;
@@ -345,34 +345,34 @@ int edit_objective(symplex *obj) {
 
 
 int get_value(double *F) {
-	while (scanf("%lf", F) != 1)
-		getchar();
+    while (scanf("%lf", F) != 1)
+        getchar();
 
-	return SUCCESS;
+    return SUCCESS;
 }
 
 
 int getSign() {
-	char s[2];
-	
-	while (strchr(s,'=') == NULL) {
-		scanf("%[><=]", s);
-		getchar();
-	}
+    char s[2];
+    
+    while (strchr(s,'=') == NULL) {
+        scanf("%[><=]", s);
+        getchar();
+    }
 
-	if (strstr(s, ">=") != NULL)
+    if (strstr(s, ">=") != NULL)
         return BIGGER;
-	else if (strstr(s, "<=") != NULL)
-		return LOWER;
-	else if (strstr(s, "=") != NULL)
-		return EQUAL;
-	else
-		return 0;
+    else if (strstr(s, "<=") != NULL)
+        return LOWER;
+    else if (strstr(s, "=") != NULL)
+        return EQUAL;
+    else
+        return 0;
 }
 
 
 int clear_stdin() {
     while (getchar()!='\n')
-		;
+        ;
     return 1;
 }

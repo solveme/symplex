@@ -131,9 +131,9 @@ int get_first_plan(symplex *obj){
                 return ITERATION_FAIL;
             default:
                 clean_mem(&sym);
-				// TODO: log this case to stderr
+                // TODO: log this case to stderr
                 return i;
-		}
+        }
     }
     return NOT_ENOUGH_MEMORY;
 }
@@ -199,12 +199,12 @@ int make_canonic(symplex *sym){
         clean_mem(sym);
         *sym = temp;
 
-	for (i=0; i < sym->m; i++)
-	    if (*(sym->b + i) < 0) {
+    for (i=0; i < sym->m; i++)
+        if (*(sym->b + i) < 0) {
             *(sym->b + i) *= -1;
             for (j=0; j < sym->n; j++)
                 *(sym->a + i*sym->n + j) *= -1;
-	    }
+        }
     }
 
     return SUCCESS;
@@ -217,7 +217,7 @@ int iteration(symplex *mx) {
     unsigned int i, j, r, s, n, m;
     double min, temp;
     short_symplex one, two, buffer;
-	// We use <one> for analysing current state and <two> is a place where we will store our computations, then we'll swap pointers so two-->one and one-->two
+    // We use <one> for analysing current state and <two> is a place where we will store our computations, then we'll swap pointers so two-->one and one-->two
 
     one.a = mx->a;
     one.d = mx->d;
@@ -227,7 +227,7 @@ int iteration(symplex *mx) {
 
     do {
         min=0;
-        state &= MEM;															//Оставляем флаг выделения памяти, если он присутствует
+        state &= MEM;                                                           //Оставляем флаг выделения памяти, если он присутствует
         for (j=0; j<n; j++)                                                     //Первая стадия итерации
             if (*(one.d+j) < 0) {                                               //Ищем отрицательные оценки замещения
                 if ((state & ~MEM) == 0)                                        //Устанавливаем флаг наличия отрицательных оценок замещения
@@ -257,7 +257,7 @@ int iteration(symplex *mx) {
                 two.d = buffer.d = (double *) calloc(n, sizeof(double));
                 if (two.a && two.d == NULL)
                     return NOT_ENOUGH_MEMORY;
-                state |= MEM;													//В конце необходимо будет очистить память для временных вычислений
+                state |= MEM;                                                   //В конце необходимо будет очистить память для временных вычислений
             }
             for (i=0; i<m; i++)                                                 //Вычисление новых коэффициентов замещения
                 for (j=0; j<n; j++)
@@ -298,7 +298,7 @@ int iteration(symplex *mx) {
         state &= ~MEM;
     }
 
-    return state;		// {SUCCESS || ITERATION_FAIL}
+    return state;       // {SUCCESS || ITERATION_FAIL}
 }
 
 
@@ -307,7 +307,7 @@ double roundd (double d) {
 }
 
 int is_integer (double d) {
-	return d-floor(d) < FLT_EPSILON;
+    return d-floor(d) < FLT_EPSILON;
 }
 
 void swap_ptr (double **a, double **b){
